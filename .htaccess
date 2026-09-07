@@ -1,20 +1,11 @@
-# <IfModule mod_rewrite.c>
-#     RewriteEngine On
-#     RewriteRule ^$ public/ [L]
-#     RewriteRule (.*) public/$1 [L]
-# </IfModule>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
+    # Se a requisição já for para a pasta public/, não reescreve novamente
+    RewriteCond %{REQUEST_URI} ^/public/ [NC]
+    RewriteRule ^ - [L]
 
-Options -Indexes
-RewriteEngine On
-
-# Bloqueia acesso direto ao .env
-<Files ".env">
-    Order allow,deny
-    Deny from all
-</Files>
-
-# Redireciona tudo para o index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [QSA,L]
+    # Redireciona todas as outras requisições para public/
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

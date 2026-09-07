@@ -59,8 +59,20 @@ function env(string $key, ?string $default = null): ?string
 
 function base_url(string $path = ''): string
 {
-    $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
-    $base = rtrim($scriptName, '/');
+    $configuredUrl = env('APP_URL');
+    $configuredPath = $configuredUrl !== null ? parse_url($configuredUrl, PHP_URL_PATH) : false;
+
+    if (is_string($configuredPath)) {
+        $base = rtrim(str_replace('\\', '/', $configuredPath), '/');
+    } else {
+        $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+        $base = $scriptName === '.' ? '' : rtrim($scriptName, '/');
+
+        if ($base === '/public') {
+            $base = '';
+        }
+    }
+
     $path = '/' . ltrim($path, '/');
     return $base . $path;
 }
