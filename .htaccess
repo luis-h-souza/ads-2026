@@ -5,6 +5,8 @@
     RewriteCond %{REQUEST_URI} ^/public/ [NC]
     RewriteRule ^ - [L]
 
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
     # Redireciona todas as outras requisições para public/
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
