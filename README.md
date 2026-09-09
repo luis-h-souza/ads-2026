@@ -41,8 +41,7 @@ ads-2026/
 │       └── dashboard/
 │           └── index.php         # View principal do painel com modais integrados
 ├── database/
-│   ├── schema.sql                # Script de criação das tabelas e chaves estrangeiras
-│   └── seed_mock_data.php        # Script de migração dos dados curriculares para o banco
+│   └── schema.sql                # Script de criação das tabelas e chaves estrangeiras
 ├── public/
 │   ├── .htaccess                 # Reescrita para redirecionar todas as rotas para index.php
 │   ├── index.php                 # Front Controller único da aplicação
@@ -86,13 +85,6 @@ DB_PASSWORD=
 APP_URL=http://localhost/ads-2026
 APP_ENV=local
 ```
-
-### Passo 3: Popular o Banco de Dados (Seed Inicial)
-Para migrar a grade completa de matérias e unidades para o seu usuário:
-```bash
-C:\xampp\php\php.exe database/seed_mock_data.php
-```
-
 ---
 
 ## 🌐 3. Rotas de Páginas (Views Web)
