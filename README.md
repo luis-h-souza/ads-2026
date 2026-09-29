@@ -72,6 +72,7 @@ ads-2026/
    USE `ads-aulas`;
    -- Importar o conteúdo de database/schema.sql
    ```
+  O script também cria a conta de demonstração, se ela ainda não existir: `aluno@faculdade.edu.br` / `senha123`. Se o banco já estava configurado, execute novamente o `database/schema.sql` para inserir essa conta; os demais usuários não são alterados.
 
 ### Passo 2: Configurar o arquivo `.env`
 Verifique o arquivo `.env` na raiz do projeto:

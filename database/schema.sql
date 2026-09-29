@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS usuarios (
     UNIQUE KEY uk_usuarios_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT IGNORE INTO usuarios (nome, email, senha_hash)
+VALUES ('Aluno Demonstração', 'aluno@faculdade.edu.br', '$2y$10$f0REoyy/0x9NpkY74lfTMOfBWa39EhtI8cJ1xk/Y3ba5S0pAciXlu');
+
 CREATE TABLE IF NOT EXISTS semestres (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id BIGINT UNSIGNED NOT NULL,
