@@ -6,6 +6,7 @@ require_once dirname(__DIR__) . '/app/Config/bootstrap.php';
 
 use App\Controllers\AuthController;
 use App\Controllers\DashboardController;
+use App\Controllers\HelpController;
 use App\Controllers\SemesterController;
 use App\Controllers\StudyController;
 use App\Core\App;
@@ -18,6 +19,7 @@ $router = $app->getRouter();
 // Controllers
 $auth = new AuthController();
 $dashboard = new DashboardController();
+$help = new HelpController();
 $semesters = new SemesterController();
 $study = new StudyController();
 
@@ -27,6 +29,7 @@ $router->get('/', function () {
 });
 $router->get('/login', [$auth, 'showLogin']);
 $router->get('/dashboard', [$dashboard, 'index']);
+$router->get('/ajuda', [$help, 'index']);
 $router->get('/logout', [$auth, 'logout']);
 
 // ─── ROTAS DE API & ENDPOINTS ────────────────────────────────────────────────

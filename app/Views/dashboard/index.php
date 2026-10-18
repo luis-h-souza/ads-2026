@@ -22,6 +22,13 @@
                 <span id="userNameDisplay"><?= !empty($user['nome']) ? htmlspecialchars($user['nome']) : 'Modo Convidado' ?></span>
             </div>
             <div class="nav-links">
+                <a href="<?= base_url('/ajuda') ?>" class="settings-toggle help-toggle" aria-label="Ajuda" title="Ajuda">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3" />
+                        <path d="M12 17h.01" />
+                    </svg>
+                </a>
                 <div class="settings-menu-container">
                     <button type="button" id="settingsToggle" class="settings-toggle" aria-label="Opções" title="Opções"
                         aria-haspopup="true" aria-expanded="false" aria-controls="settingsMenu">
@@ -268,6 +275,8 @@
 
     <footer>
         <div id="loadStatus">carregando progresso salvo...</div>
+        <div>Painel de Estudos &middot; Gestão de Aulas e Atividades</div>
+        <div class="version-tag">v2.0 &bull; 2026</div>
     </footer>
 
     <script>
