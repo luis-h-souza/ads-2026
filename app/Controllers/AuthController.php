@@ -56,22 +56,38 @@ final class AuthController extends BaseController
 
         Request::requireFields($data, ['nome', 'email', 'senha']);
 
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL) || strlen((string) $data['senha']) < 8) {
-            $this->json(['erro' => 'Informe um e-mail válido e uma senha com ao menos 8 caracteres.'], 422);
+        $name = is_string($data['nome']) ? trim($data['nome']) : '';
+        $email = is_string($data['email']) ? strtolower(trim($data['email'])) : '';
+        $password = is_string($data['senha']) ? $data['senha'] : '';
+
+        if ($name === '') {
+            $this->json(['erro' => 'Informe seu nome.'], 422);
         }
 
-        $existing = User::findByEmail((string) $data['email']);
+        if (strlen($name) > 120) {
+            $this->json(['erro' => 'O nome deve ter no máximo 120 caracteres.'], 422);
+        }
+
+        if (strlen($email) > 190 || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->json(['erro' => 'Informe um e-mail válido.'], 422);
+        }
+
+        if (strlen($password) < 8) {
+            $this->json(['erro' => 'A senha deve ter ao menos 8 caracteres.'], 422);
+        }
+
+        $existing = User::findByEmail($email);
         if ($existing) {
             $this->json(['erro' => 'Este e-mail já está cadastrado.'], 409);
         }
 
-        $id = User::create((string) $data['nome'], (string) $data['email'], (string) $data['senha']);
-        Auth::login($id, trim((string) $data['nome']), strtolower(trim((string) $data['email'])));
+        $id = User::create($name, $email, $password);
+        Auth::login($id, $name, $email);
 
         $this->json([
             'id' => $id,
-            'nome' => trim((string) $data['nome']),
-            'email' => strtolower(trim((string) $data['email'])),
+            'nome' => $name,
+            'email' => $email,
         ], 201);
     }
 

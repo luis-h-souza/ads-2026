@@ -33,13 +33,13 @@
                 </div>
             </div>
             <h1>Painel de Estudos</h1>
-            <p class="auth-subtitle">Entre com suas credenciais para acompanhar seu cronograma, metas e entregas.</p>
+            <p class="auth-subtitle" id="authSubtitle">Entre com suas credenciais para acompanhar seu cronograma, metas e entregas.</p>
         </header>
 
         <!-- Login Card -->
         <div class="auth-card">
             <div class="auth-card-top">
-                <span class="auth-card-title">Identificação do Aluno</span>
+                <span class="auth-card-title" id="authCardTitle">Identificação do Aluno</span>
                 <span class="auth-badge">2026.2</span>
             </div>
 
@@ -121,8 +121,44 @@
                 </button>
             </form>
 
+            <form id="registerForm" class="hidden" novalidate>
+                <div class="form-group">
+                    <label for="registerName" class="form-label">Nome completo</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="registerName" name="nome" class="form-input"
+                            placeholder="Seu nome" autocomplete="name" maxlength="120" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail" class="form-label">E-mail</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="registerEmail" name="email" class="form-input"
+                            placeholder="voce@exemplo.com" autocomplete="email" maxlength="190" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword" class="form-label">Senha (mínimo de 8 caracteres)</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="registerPassword" name="senha" class="form-input"
+                            placeholder="Crie uma senha" autocomplete="new-password" minlength="8" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="registerSubmitBtn" class="auth-submit-btn">
+                    <span class="btn-text">Criar conta</span>
+                    <span class="btn-spinner hidden" aria-hidden="true"></span>
+                    <svg class="btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                </button>
+            </form>
+
             <!-- Quick Demo Access / Auto-fill button for testing -->
-            <div class="auth-demo-box">
+            <div id="authDemoBox" class="auth-demo-box">
                 <div class="demo-box-header">
                     <span class="demo-label">Atalho rápido (Demonstração)</span>
                     <button type="button" id="fillDemoBtn" class="demo-fill-btn">Preencher dados demo</button>
@@ -140,7 +176,7 @@
                 Acessar painel como convidado
             </a>
             <span class="nav-divider">&middot;</span>
-            <span class="support-text">Ajuda com acesso? Contate o suporte</span>
+            <button type="button" id="toggleAuthMode" class="auth-mode-toggle">Criar acesso</button>
         </div>
     </div>
 

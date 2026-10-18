@@ -1253,6 +1253,19 @@ footer {
     color: rgba(154, 163, 199, 0.6);
 }
 
+.auth-mode-toggle {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--amber);
+    font: inherit;
+    cursor: pointer;
+}
+
+.auth-mode-toggle:hover {
+    text-decoration: underline;
+}
+
 .auth-page-footer {
     text-align: center;
     font-size: 11.5px;
