@@ -22,36 +22,47 @@
                 <span id="userNameDisplay"><?= !empty($user['nome']) ? htmlspecialchars($user['nome']) : 'Modo Convidado' ?></span>
             </div>
             <div class="nav-links">
-                <?php if (!empty($user)): ?>
-                    <a href="<?= base_url('/logout') ?>" id="authNavBtn" class="nav-btn" title="Encerrar sessão">
+                <div class="settings-menu-container">
+                    <button type="button" id="settingsToggle" class="settings-toggle" aria-label="Opções" title="Opções"
+                        aria-haspopup="true" aria-expanded="false" aria-controls="settingsMenu">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                            <polyline points="16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V4a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2.9Z" />
                         </svg>
-                        <span id="authNavText">Sair</span>
-                    </a>
-                <?php else: ?>
-                    <a href="<?= base_url('/login') ?>" id="authNavBtn" class="nav-btn" title="Entrar no sistema">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                            <polyline points="10 17 15 12 10 7" />
-                            <line x1="15" y1="12" x2="3" y2="12" />
-                        </svg>
-                        <span id="authNavText">Entrar</span>
-                    </a>
-                <?php endif; ?>
+                    </button>
+                    <div id="settingsMenu" class="settings-menu hidden" role="menu" aria-labelledby="settingsToggle">
+                        <button type="button" class="reset-btn settings-menu-item" id="resetBtn" role="menuitem">Reiniciar progresso</button>
+                        <?php if (!empty($user)): ?>
+                            <button type="button" class="nav-btn settings-menu-item" id="btnOpenSemesterManager" role="menuitem">Editar semestres</button>
+                        <?php endif; ?>
+                        <a href="<?= base_url(!empty($user) ? '/logout' : '/login') ?>" id="authNavBtn" class="nav-btn settings-menu-item"
+                            title="<?= !empty($user) ? 'Encerrar sessão' : 'Entrar no sistema' ?>" role="menuitem">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <?php if (!empty($user)): ?>
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                <?php else: ?>
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                                    <polyline points="10 17 15 12 10 7" />
+                                    <line x1="15" y1="12" x2="3" y2="12" />
+                                <?php endif; ?>
+                            </svg>
+                            <span id="authNavText"><?= !empty($user) ? 'Sair' : 'Entrar' ?></span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
         <header>
-            <div class="eyebrow">Rotina de estudo noturno &middot; 3–4h/dia</div>
+            <div class="eyebrow">Rotina de estudo</div>
             <div class="lamp">
                 <div class="countdown-num" id="countdownNum">--</div>
-                <div class="countdown-label" id="countdownLabel">dias até a entrega</div>
+                <div class="countdown-label" id="countdownLabel">carregando semestre...</div>
             </div>
             <h1>Painel de Estudos</h1>
-            <div class="deadline-date">conteúdo (aulas) até 22/11 &middot; entrega final até 12/12/2026</div>
+            <div class="deadline-date" id="semesterDates">Carregando datas do semestre...</div>
         </header>
 
         <?php if (!empty($user)): ?>
@@ -92,8 +103,72 @@
             </div>
         </div>
 
+        <?php if (!empty($user)): ?>
+            <button type="button" id="examSummaryCard" class="exam-summary-card">
+                <div class="exam-summary-title">Provas do semestre</div>
+                <div class="exam-summary-stats">
+                    <span><strong id="scheduledExamCount">0</strong> marcadas</span>
+                    <span><strong id="completedExamCount">0</strong> finalizadas</span>
+                </div>
+            </button>
+        <?php endif; ?>
+
         <div id="subjects"></div>
     </div>
+
+    <?php if (!empty($user)): ?>
+        <!-- ─── MODAL: PROVAS DO SEMESTRE ───────────────────────────────────── -->
+        <div id="modalExams" class="modal-backdrop hidden">
+            <div class="modal exam-modal">
+                <div class="modal-header">
+                    <h2>Provas do semestre</h2>
+                    <button type="button" class="close-btn" data-close-modal="modalExams" aria-label="Fechar">&times;</button>
+                </div>
+                <p class="exam-modal-intro">Consulte e atualize a data, o horário e o resultado das provas das matérias deste semestre.</p>
+                <div id="examList" class="exam-list"></div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($user)): ?>
+        <!-- ─── MODAL: EDITAR SEMESTRES ─────────────────────────────────────── -->
+        <div id="modalManageSemesters" class="modal-backdrop hidden">
+            <div class="modal" style="max-width: 560px;">
+                <div class="modal-header">
+                    <h2 id="semesterManagerTitle">Editar Semestres</h2>
+                    <button type="button" class="close-btn" data-close-modal="modalManageSemesters">&times;</button>
+                </div>
+                <div id="semesterListView">
+                    <div id="semesterManagerList" class="semester-manager-list"></div>
+                </div>
+                <form id="formEditSemester" class="hidden">
+                    <input type="hidden" id="inputEditingSemesterId">
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label for="inputEditSemesterName" class="form-label">Nome do semestre *</label>
+                        <input type="text" id="inputEditSemesterName" class="form-input" maxlength="100" required>
+                    </div>
+                    <div class="form-grid" style="margin-bottom: 14px;">
+                        <div class="field">
+                            <label for="inputEditSemesterYear">Ano letivo *</label>
+                            <input type="number" id="inputEditSemesterYear" min="1" required>
+                        </div>
+                        <div class="field">
+                            <label for="inputEditSemesterStart">Data de início</label>
+                            <input type="date" id="inputEditSemesterStart">
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom: 18px;">
+                        <label for="inputEditSemesterEnd">Data fim / entrega</label>
+                        <input type="date" id="inputEditSemesterEnd">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="btnBackSemesterList" class="secondary-btn">Voltar à lista</button>
+                        <button type="submit" id="btnSaveSemester" class="primary-btn">Salvar alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    <?php endif; ?>
 
     <!-- ─── MODAL: NOVO SEMESTRE ──────────────────────────────────────────────── -->
     <div id="modalSemester" class="modal-backdrop hidden">
@@ -133,7 +208,7 @@
     <div id="modalDiscipline" class="modal-backdrop hidden">
         <div class="modal">
             <div class="modal-header">
-                <h2 id="modalDisciplineTitle">Cadastrar Matéria & Aulas</h2>
+                <h2 id="modalDisciplineTitle">Cadastrar Matéria / Aulas</h2>
                 <button type="button" class="close-btn" data-close-modal="modalDiscipline">&times;</button>
             </div>
             <form id="formNewDiscipline">
@@ -155,6 +230,17 @@
                     <div class="field">
                         <label>Data da Prova</label>
                         <input type="date" id="inputDiscExam">
+                    </div>
+                </div>
+
+                <div id="disciplineResultControls" class="discipline-result-controls hidden">
+                    <div>
+                        <strong>Resultado da matéria</strong>
+                        <p id="disciplineResultHelp">Conclua todas as aulas, exercícios e a prova para registrar o resultado.</p>
+                    </div>
+                    <div class="discipline-result-buttons">
+                        <button type="button" class="result-btn result-approved" data-discipline-result="aprovado" disabled>Aprovado</button>
+                        <button type="button" class="result-btn result-failed" data-discipline-result="reprovado" disabled>Reprovado</button>
                     </div>
                 </div>
 
@@ -182,12 +268,6 @@
 
     <footer>
         <div id="loadStatus">carregando progresso salvo...</div>
-        <div class="footer-actions">
-            <button class="reset-btn" id="resetBtn">reiniciar progresso</button>
-            <?php if (empty($user)): ?>
-                <a href="<?= base_url('/login') ?>" class="secondary-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">Área de Login</a>
-            <?php endif; ?>
-        </div>
     </footer>
 
     <script>

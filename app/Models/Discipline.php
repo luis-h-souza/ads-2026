@@ -47,6 +47,60 @@ final class Discipline extends BaseModel
         return $stmt->execute($params);
     }
 
+    public static function updateExam(int $id, ?string $date, ?string $time, bool $completed, ?float $grade): void
+    {
+        $db = self::db();
+        $db->beginTransaction();
+
+        try {
+            $stmt = $db->prepare('UPDATE disciplinas SET data_prova = ? WHERE id = ?');
+            $stmt->execute([$date, $id]);
+
+            $stmt = $db->prepare(
+                'INSERT INTO provas (disciplina_id, horario, concluida, nota)
+                 VALUES (?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE horario = VALUES(horario), concluida = VALUES(concluida), nota = VALUES(nota)'
+            );
+            $stmt->execute([$id, $time, $completed ? 1 : 0, $grade]);
+
+            $db->commit();
+        } catch (\Throwable $error) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            throw $error;
+        }
+    }
+
+    public static function canSetResult(int $id, int $userId): bool
+    {
+        $stmt = self::db()->prepare(
+            'SELECT COUNT(i.id) AS total_items,
+                    SUM(CASE WHEN p.item_estudo_id IS NOT NULL THEN 1 ELSE 0 END) AS completed_items,
+                    MAX(COALESCE(ex.concluida, 0)) AS exam_completed
+             FROM disciplinas d
+             LEFT JOIN unidades u ON u.disciplina_id = d.id
+             LEFT JOIN itens_estudo i ON i.unidade_id = u.id
+             LEFT JOIN progresso_itens p ON p.item_estudo_id = i.id AND p.usuario_id = ?
+             LEFT JOIN provas ex ON ex.disciplina_id = d.id
+             WHERE d.id = ?
+             GROUP BY d.id'
+        );
+        $stmt->execute([$userId, $id]);
+        $progress = $stmt->fetch();
+
+        return $progress !== false
+            && (int) $progress['total_items'] > 0
+            && (int) $progress['total_items'] === (int) $progress['completed_items']
+            && (int) $progress['exam_completed'] === 1;
+    }
+
+    public static function setResult(int $id, string $result): bool
+    {
+        $stmt = self::db()->prepare('UPDATE disciplinas SET resultado = ? WHERE id = ?');
+        return $stmt->execute([$result, $id]);
+    }
+
     public static function delete(int $id): bool
     {
         $stmt = self::db()->prepare('DELETE FROM disciplinas WHERE id = ?');

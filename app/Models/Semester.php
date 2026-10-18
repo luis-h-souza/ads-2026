@@ -80,11 +80,13 @@ final class Semester extends BaseModel
             return null;
         }
 
-        $sql = 'SELECT d.id AS disciplina_id, d.nome AS disciplina_nome, d.descricao, d.data_inicio, d.data_fim, d.data_prova, d.ordem AS disciplina_ordem, 
+        $sql = 'SELECT d.id AS disciplina_id, d.nome AS disciplina_nome, d.descricao, d.data_inicio, d.data_fim, d.data_prova, d.resultado, d.ordem AS disciplina_ordem,
+                       av.horario AS horario_prova, av.concluida AS prova_concluida, av.nota AS prova_nota,
                        u.id AS unidade_id, u.titulo AS unidade_titulo, u.ordem AS unidade_ordem, 
                        i.id AS item_id, i.titulo AS item_titulo, i.tipo, i.ordem AS item_ordem, 
                        p.concluido_em 
                 FROM disciplinas d 
+                LEFT JOIN provas av ON av.disciplina_id = d.id
                 LEFT JOIN unidades u ON u.disciplina_id = d.id 
                 LEFT JOIN itens_estudo i ON i.unidade_id = u.id 
                 LEFT JOIN progresso_itens p ON p.item_estudo_id = i.id AND p.usuario_id = ? 
@@ -104,6 +106,10 @@ final class Semester extends BaseModel
                 'data_inicio' => $row['data_inicio'],
                 'data_fim' => $row['data_fim'],
                 'data_prova' => $row['data_prova'],
+                'resultado' => $row['resultado'],
+                'horario_prova' => $row['horario_prova'],
+                'prova_concluida' => (bool) ($row['prova_concluida'] ?? false),
+                'prova_nota' => $row['prova_nota'],
                 'ordem' => (int) $row['disciplina_ordem'],
                 'unidades' => [],
             ];

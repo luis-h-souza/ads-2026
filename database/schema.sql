@@ -35,11 +35,21 @@ CREATE TABLE IF NOT EXISTS disciplinas (
     data_inicio DATE NULL,
     data_fim DATE NULL,
     data_prova DATE NULL,
+    resultado ENUM('aprovado', 'reprovado') NULL,
     ordem SMALLINT UNSIGNED NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_disciplinas_semestre FOREIGN KEY (semestre_id) REFERENCES semestres(id) ON DELETE CASCADE,
     KEY idx_disciplinas_semestre_ordem (semestre_id, ordem)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS provas (
+    disciplina_id BIGINT UNSIGNED PRIMARY KEY,
+    horario TIME NULL,
+    concluida TINYINT(1) NOT NULL DEFAULT 0,
+    nota DECIMAL(8, 2) NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_provas_disciplina FOREIGN KEY (disciplina_id) REFERENCES disciplinas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS unidades (

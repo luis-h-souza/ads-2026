@@ -72,7 +72,11 @@ ads-2026/
    USE `ads-aulas`;
    -- Importar o conteúdo de database/schema.sql
    ```
-  O script também cria a conta de demonstração, se ela ainda não existir: `aluno@faculdade.edu.br` / `senha123`. Se o banco já estava configurado, execute novamente o `database/schema.sql` para inserir essa conta; os demais usuários não são alterados.
+  O script também cria a conta de demonstração, se ela ainda não existir: `aluno@faculdade.edu.br` / `senha123`. Se o banco já estava configurado, execute novamente o `database/schema.sql` para inserir essa conta e criar a tabela de provas usada pelo painel; os demais usuários não são alterados. Para bancos existentes, adicione a coluna de resultado das matérias uma única vez:
+  ```sql
+  ALTER TABLE disciplinas
+      ADD COLUMN resultado ENUM('aprovado', 'reprovado') NULL AFTER data_prova;
+  ```
 
 ### Passo 2: Configurar o arquivo `.env`
 Verifique o arquivo `.env` na raiz do projeto:
@@ -326,6 +330,29 @@ Todos os endpoints da API aceitam e respondem no formato `application/json` e ut
     "atualizado": true
   }
   ```
+
+#### Atualizar dados da prova
+* **PATCH `/disciplinas/{id}/prova`** ou **PATCH `/api/disciplinas/{id}/prova`**
+* **Payload:**
+  ```json
+  {
+    "data_prova": "2026-10-25",
+    "horario_prova": "19:30",
+    "prova_concluida": true,
+    "prova_nota": 8.5
+  }
+  ```
+* A data e o horário podem ser `null`, e a nota pode ser `null` enquanto não for lançada.
+
+#### Registrar resultado da matéria
+* **PATCH `/disciplinas/{id}/resultado`** ou **PATCH `/api/disciplinas/{id}/resultado`**
+* **Payload:**
+  ```json
+  {
+    "resultado": "aprovado"
+  }
+  ```
+* O resultado aceita `aprovado` ou `reprovado` e só pode ser salvo depois de concluir todos os itens de estudo e marcar a prova como finalizada.
 
 #### Excluir Disciplina (em cascata)
 * **DELETE `/disciplinas/{id}`** ou **DELETE `/api/disciplinas/{id}`**

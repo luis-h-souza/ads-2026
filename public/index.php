@@ -59,6 +59,10 @@ $router->post('/disciplinas', [$study, 'storeDiscipline']);
 $router->post('/api/disciplinas', [$study, 'storeDiscipline']);
 $router->patch('/disciplinas/{id}', fn(int $id) => $study->updateDiscipline($id));
 $router->patch('/api/disciplinas/{id}', fn(int $id) => $study->updateDiscipline($id));
+$router->patch('/disciplinas/{id}/prova', fn(int $id) => $study->updateExam($id));
+$router->patch('/api/disciplinas/{id}/prova', fn(int $id) => $study->updateExam($id));
+$router->patch('/disciplinas/{id}/resultado', fn(int $id) => $study->updateDisciplineResult($id));
+$router->patch('/api/disciplinas/{id}/resultado', fn(int $id) => $study->updateDisciplineResult($id));
 $router->delete('/disciplinas/{id}', fn(int $id) => $study->deleteDiscipline($id));
 $router->delete('/api/disciplinas/{id}', fn(int $id) => $study->deleteDiscipline($id));
 

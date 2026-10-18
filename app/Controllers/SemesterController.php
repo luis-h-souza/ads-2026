@@ -64,6 +64,16 @@ final class SemesterController extends BaseController
         $data = Request::json();
         $this->validateOptionalDates($data);
 
+        if (array_key_exists('nome', $data)) {
+            if (!is_string($data['nome']) || trim($data['nome']) === '') {
+                $this->json(['erro' => 'Informe o nome do semestre.'], 422);
+            }
+            if (strlen(trim($data['nome'])) > 100) {
+                $this->json(['erro' => 'O nome do semestre deve ter no máximo 100 caracteres.'], 422);
+            }
+            $data['nome'] = trim($data['nome']);
+        }
+
         $merged = array_merge($current, $data);
         if (($merged['data_inicio'] ?? null) !== null && ($merged['data_fim'] ?? null) !== null && $merged['data_fim'] < $merged['data_inicio']) {
             $this->json(['erro' => 'A data de fim não pode ser anterior à data de início.'], 422);

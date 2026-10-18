@@ -65,6 +65,83 @@ final class StudyController extends BaseController
         $this->json(['id' => $id, 'atualizado' => true]);
     }
 
+    public function updateExam(int $id): void
+    {
+        $userId = $this->requireAuth();
+        if (Discipline::getOwnerId($id) !== $userId) {
+            $this->json(['erro' => 'Disciplina não encontrada.'], 404);
+        }
+
+        $data = Request::json();
+        foreach (['data_prova', 'horario_prova', 'prova_concluida', 'prova_nota'] as $field) {
+            if (!array_key_exists($field, $data)) {
+                $this->json(['erro' => "O campo {$field} é obrigatório."], 422);
+            }
+        }
+
+        $date = $data['data_prova'];
+        $time = $data['horario_prova'];
+        $completed = $data['prova_concluida'];
+        $grade = $data['prova_nota'];
+
+        if ($date === '') {
+            $date = null;
+        }
+        if ($date !== null && !is_string($date)) {
+            $this->json(['erro' => 'A data da prova deve estar no formato YYYY-MM-DD.'], 422);
+        }
+        $this->validateOptionalDates(['data_prova' => $date], ['data_prova']);
+
+        if ($time === '') {
+            $time = null;
+        }
+        if ($time !== null && (!is_string($time) || !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $time))) {
+            $this->json(['erro' => 'O horário deve estar no formato HH:MM.'], 422);
+        }
+        if (!is_bool($completed)) {
+            $this->json(['erro' => 'O campo prova_concluida deve ser booleano.'], 422);
+        }
+        if ($grade === '') {
+            $grade = null;
+        }
+        if ($grade !== null && (!is_numeric($grade) || !is_finite((float) $grade)
+            || (float) $grade < 0 || (float) $grade > 999999.99)) {
+            $this->json(['erro' => 'A nota deve ser um número entre 0 e 999999,99.'], 422);
+        }
+        if ($completed && $date === null) {
+            $this->json(['erro' => 'Informe a data da prova antes de marcá-la como finalizada.'], 422);
+        }
+
+        Discipline::updateExam(
+            $id,
+            $date,
+            $time,
+            $completed,
+            $grade === null ? null : (float) $grade
+        );
+
+        $this->json(['id' => $id, 'atualizado' => true]);
+    }
+
+    public function updateDisciplineResult(int $id): void
+    {
+        $userId = $this->requireAuth();
+        if (Discipline::getOwnerId($id) !== $userId) {
+            $this->json(['erro' => 'Disciplina não encontrada.'], 404);
+        }
+
+        $data = Request::json();
+        if (!isset($data['resultado']) || !in_array($data['resultado'], ['aprovado', 'reprovado'], true)) {
+            $this->json(['erro' => 'O resultado deve ser aprovado ou reprovado.'], 422);
+        }
+        if (!Discipline::canSetResult($id, $userId)) {
+            $this->json(['erro' => 'Conclua todas as aulas, exercícios e a prova antes de informar o resultado.'], 422);
+        }
+
+        Discipline::setResult($id, $data['resultado']);
+        $this->json(['id' => $id, 'resultado' => $data['resultado'], 'atualizado' => true]);
+    }
+
     public function deleteDiscipline(int $id): void
     {
         $userId = $this->requireAuth();
